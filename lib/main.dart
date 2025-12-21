@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
 import 'screens/home.screen.dart';
-import 'screens/card.screen.dart';
-import 'screens/dashboard.screen.dart';
-import 'widgets/action.button.dart';
-import 'widgets/investement.card.dart';
+import 'utils/app.colors.dart';
 
 void main() {
-  runApp(const FinanceApp());
+  runApp(const MainApp());
 }
 
-class FinanceApp extends StatelessWidget {
-  const FinanceApp({super.key});
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark(),
+      title: 'Finance App',
+      theme: ThemeData(
+        scaffoldBackgroundColor: AppColors.darkBackground,
+        fontFamily: "Poppins",
+      ),
       home: const HomeScreen(),
     );
   }
 }
-
 
 

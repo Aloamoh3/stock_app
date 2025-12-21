@@ -42,7 +42,6 @@ class DashboardScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Horizontal scroll
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(

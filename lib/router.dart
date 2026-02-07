@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/home.screen.dart';
+import 'screens/home.view.model.dart';
+
 
 class AppRouter {
   static const String home = '/home';

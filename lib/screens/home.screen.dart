@@ -1,15 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:iconsax/iconsax.dart';
-import '/utils/app.colors.dart';
-import '/widgets/balance_display.dart';
-import '/widgets/custom_app_bar.dart';
-import '/widgets/line.chart.dart';
-import '/widgets/transaction_button.dart';
-import '/widgets/transactions.dart';
+import 'package:stock_app/controllers/data_controller.dart';
+import 'package:stock_app/utils/app_colors.dart';
+import 'package:stock_app/utils/utilities.dart';
+import 'package:stock_app/widgets/balance_display.dart';
+import 'package:stock_app/widgets/custom_app_bar.dart';
+import 'package:stock_app/widgets/line_chart.dart';
+import 'package:stock_app/widgets/transaction_button.dart';
+import 'package:stock_app/widgets/transactions.dart';
+import 'package:get/get.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final DataController _controller = Get.put(DataController());
+
+  bool portfolioIncrease = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.getStockPrices();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,63 +41,22 @@ class HomeScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: AppColors.darkBackground,
         body: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomAppBar(),
-              BalanceDisplay(),
-              TransactionButtonRow(),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                child: Text(
-                  "Featured investment",
-                  style: TextStyle(
-                    color: AppColors.primaryText,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  textAlign: TextAlign.start,
-                ),
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 20),
-                  child: Row(
-                    spacing: 8,
-                    children: [
-                      StockDisplay(name: "Apple", symbol: "AAPL", isUp: true),
-
-                      StockDisplay(
-                        name: "Google",
-                        symbol: "GOOGL",
-                        isUp: false,
-                      ),
-
-                      StockDisplay(
-                        name: "Amazon",
-                        symbol: "AMZN",
-                        isUp: true,
-                        price: "\$132.00",
-                        growth: "9.054%",
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "My portfolio",
+          child: Obx(
+            () => SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomAppBar(),
+                  BalanceDisplay(),
+                  TransactionButtonRow(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    child: Text(
+                      "Featured investment",
                       style: TextStyle(
                         color: AppColors.primaryText,
                         fontSize: 20,
@@ -86,28 +64,82 @@ class HomeScreen extends StatelessWidget {
                       ),
                       textAlign: TextAlign.start,
                     ),
-                    InkWell(
-                      child: Text(
-                        "View all",
-                        style: TextStyle(
-                          color: AppColors.primaryText,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        textAlign: TextAlign.start,
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20, right: 20),
+                      child: Row(
+                        spacing: 8,
+                        children: [
+                          StockDisplay(
+                            name: "Apple",
+                            symbol: "AAPL",
+                            data: _controller.appleStock.value,
+                          ),
+
+                          StockDisplay(
+                            name: "Google",
+                            symbol: "GOOGL",
+                            data: _controller.googleStock.value,
+                          ),
+
+                          StockDisplay(
+                            name: "Amazon",
+                            symbol: "AMZN",
+                            data: _controller.amazonStock.value,
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "My portfolio",
+                          style: TextStyle(
+                            color: AppColors.primaryText,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          textAlign: TextAlign.start,
+                        ),
+                        InkWell(
+                          child: Text(
+                            "View all",
+                            style: TextStyle(
+                              color: AppColors.primaryText,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            textAlign: TextAlign.start,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Transactions(
+                    stockIcon: "assets/images/Amazon_icon.png",
+                    stockName: "Amazon",
+                    stockSymbol: "AMZN",
+                    stockPrice:
+                        "\$${_controller.amazonStock.value.bars.first.close}",
+                    stockGrowth:
+                        Utilities.calculatePrizeChange(
+                          _controller.amazonStock.value.bars.first,
+                        ).$2
+                        ? "+${Utilities.calculatePrizeChange(_controller.amazonStock.value.bars.first).$1.toStringAsFixed(2)}%"
+                        : "-${Utilities.calculatePrizeChange(_controller.amazonStock.value.bars.first).$1.toStringAsFixed(2)}%",
+                  ),
+                ],
               ),
-              Transactions(
-                stockIcon: "assets/images/Amazon_icon.png",
-                stockName: "Amazon",
-                stockSymbol: "AMZN",
-                stockPrice: "\$132.00",
-                stockGrowth: "+9.054%",
-              ),
-            ],
+            ),
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(

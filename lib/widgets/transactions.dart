@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import '/utils/app.colors.dart';
+import 'package:stock_app/utils/app_colors.dart';
 
 class Transactions extends StatelessWidget {
   const Transactions({

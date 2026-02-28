@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '/utils/app.colors.dart';
+import 'package:stock_app/utils/app_colors.dart';
 
 class BalanceDisplay extends StatelessWidget {
   const BalanceDisplay({super.key});
